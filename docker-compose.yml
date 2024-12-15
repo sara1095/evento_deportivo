@@ -1,0 +1,47 @@
+services:
+  # Config Servers
+  config1:
+    image: mongo:latest
+    container_name: config1
+    command: mongod --configsvr --replSet configReplSet --port 27017
+    ports:
+      - "27017:27017"
+
+  config2:
+    image: mongo:latest
+    container_name: config2
+    command: mongod --configsvr --replSet configReplSet --port 27018
+    ports:
+      - "27018:27018"
+
+  config3:
+    image: mongo:latest
+    container_name: config3
+    command: mongod --configsvr --replSet configReplSet --port 27019
+    ports:
+      - "27019:27019"
+
+  # Shard 1
+  shard1:
+    image: mongo:latest
+    container_name: shard1
+    command: mongod --shardsvr --replSet shard1ReplSet --port 27020
+    ports:
+      - "27020:27020"
+
+  # Shard 2
+  shard2:
+    image: mongo:latest
+    container_name: shard2
+    command: mongod --shardsvr --replSet shard2ReplSet --port 27021
+    ports:
+      - "27021:27021"
+
+  # Mongos Router
+  mongos:
+    image: mongo:latest
+    container_name: mongos
+    command: >
+      mongos --configdb configReplSet/config1:27017,config2:27018,config3:27019 --port 27022
+    ports:
+      - "27022:27022"
